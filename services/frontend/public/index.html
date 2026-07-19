@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Project 1</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 640px; padding: 0 1rem; }
+    h1 { margin-bottom: 0.25rem; }
+    .sub { color: #666; margin-top: 0; }
+    section { margin-top: 2rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
+    .err { color: #b00; }
+  </style>
+</head>
+<body>
+  <h1>Shop</h1>
+  <p class="sub">Project 1 — Kubernetes DevOps Pipeline demo application</p>
+
+  <section>
+    <h2>Products</h2>
+    <div id="products">Loading…</div>
+  </section>
+
+  <section>
+    <h2>Orders</h2>
+    <div id="orders">Loading…</div>
+  </section>
+
+  <script>
+    function table(rows, cols) {
+      const head = '<tr>' + cols.map((c) => '<th>' + c.label + '</th>').join('') + '</tr>';
+      const body = rows
+        .map((r) => '<tr>' + cols.map((c) => '<td>' + r[c.key] + '</td>').join('') + '</tr>')
+        .join('');
+      return '<table>' + head + body + '</table>';
+    }
+
+    async function load(url, elId, cols) {
+      const el = document.getElementById(elId);
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const rows = data.products || data.orders || [];
+        el.innerHTML = rows.length ? table(rows, cols) : 'None found.';
+      } catch (err) {
+        el.innerHTML = '<span class="err">Could not load: ' + err.message + '</span>';
+      }
+    }
+
+    // Relative URLs — resolved against the gateway origin the page was served from.
+    load('/api/products', 'products', [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Name' },
+      { key: 'price', label: 'Price' },
+    ]);
+    load('/api/orders', 'orders', [
+      { key: 'id', label: 'ID' },
+      { key: 'product_name', label: 'Product' },
+      { key: 'quantity', label: 'Qty' },
+    ]);
+  </script>
+</body>
+</html>

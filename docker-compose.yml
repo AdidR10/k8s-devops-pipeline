@@ -1,0 +1,80 @@
+# Local test harness for the six-service shop application.
+#
+# This file is for AUTHORS to verify the microservices work end-to-end before
+# they are deployed to Kubernetes in Lab 2. It is NOT used by students and is
+# never run on the Poridhi VMs (those use containerd, not Docker).
+#
+#   docker compose up --build      # start everything
+#   open http://localhost:8080     # the app, through the gateway
+#   docker compose down -v         # stop and wipe the database volumes
+
+services:
+  products-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shoppass
+      POSTGRES_DB: products
+    volumes:
+      - ./db/products-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d products"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  orders-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shoppass
+      POSTGRES_DB: orders
+    volumes:
+      - ./db/orders-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d orders"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  products-api:
+    build: ./services/products-api
+    environment:
+      DB_HOST: products-db
+      DB_PORT: 5432
+      DB_USER: shop
+      DB_PASSWORD: shoppass
+      DB_NAME: products
+    depends_on:
+      products-db:
+        condition: service_healthy
+
+  orders-api:
+    build: ./services/orders-api
+    environment:
+      DB_HOST: orders-db
+      DB_PORT: 5432
+      DB_USER: shop
+      DB_PASSWORD: shoppass
+      DB_NAME: orders
+      PRODUCTS_API_URL: http://products-api:8080
+    depends_on:
+      orders-db:
+        condition: service_healthy
+      products-api:
+        condition: service_started
+
+  frontend:
+    build: ./services/frontend
+    depends_on:
+      - products-api
+      - orders-api
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - frontend
+      - products-api
+      - orders-api
