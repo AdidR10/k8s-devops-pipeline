@@ -1,0 +1,8 @@
+frontend:
+  replicas: 2
+productsApi:
+  replicas: 2
+ordersApi:
+  replicas: 2
+gateway:
+  nodePort: 30081

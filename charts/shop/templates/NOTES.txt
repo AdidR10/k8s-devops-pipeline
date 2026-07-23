@@ -1,0 +1,4 @@
+The shop app is deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Reach it through the gateway NodePort:
+  http://<node-ip>:{{ .Values.gateway.nodePort }}/
