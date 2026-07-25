@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: products-api
-        image: {{ .Values.global.imageRepo }}/productsApi:{{ .Values.global.imageTag }}
+        image: {{ .Values.global.imageRepo }}/products-api:{{ .Values.global.imageTag }}
         ports:
         - containerPort: 8080
         envFrom:
