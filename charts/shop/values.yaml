@@ -1,6 +1,6 @@
 global:
   imageRepo: adidr10   # matches DOCKERHUB_USERNAME
-  imageTag: v1                           # CI bumps this to the commit SHA
+  imageTag: 5227d1feff849927102133b7ad03d11c5657d8c6
 
 frontend:
   replicas: 1
