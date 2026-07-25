@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: orders-api
-        image: {{ .Values.ordersApi.image.repository }}:{{ .Values.ordersApi.image.tag }}
+        image: {{ .Values.global.imageRepo }}/ordersApi:{{ .Values.global.imageTag }}
         ports:
         - containerPort: 8080
         envFrom:

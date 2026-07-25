@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+        image: {{ .Values.global.imageRepo }}/frontend:{{ .Values.global.imageTag }}
         ports:
         - containerPort: 3000
         livenessProbe:

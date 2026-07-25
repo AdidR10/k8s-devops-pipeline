@@ -1,24 +1,13 @@
-# Default values (this baseline acts as the "dev" environment).
+global:
+  imageRepo: adidr10   # matches DOCKERHUB_USERNAME
+  imageTag: v1                           # CI bumps this to the commit SHA
+
 frontend:
-  image:
-    repository: adidr10/frontend
-    tag: v1
   replicas: 1
-
 productsApi:
-  image:
-    repository: adidr10/products-api
-    tag: v1
   replicas: 1
-
 ordersApi:
-  image:
-    repository: adidr10/orders-api
-    tag: v1
   replicas: 1
-
 gateway:
   nodePort: 30080
-
-# Reserved for Lab 4 (private registry). Empty = public images, no pull secret.
-imagePullSecrets: []  
+imagePullSecrets: []
