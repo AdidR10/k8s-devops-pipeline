@@ -7,14 +7,14 @@ spec:
   project: default
   source:
     repoURL: https://github.com/AdidR10/k8s-devops-pipeline.git
-    targetRevision: my-lab-4
+    targetRevision: my-lab-6
     path: charts/shop
   destination:
     server: https://kubernetes.default.svc
     namespace: shop
   syncPolicy:
     automated:
-      selfHeal: true    # revert manual cluster changes (drift)
+      selfHeal: false    # revert manual cluster changes (drift)
       prune: true       # delete objects removed from Git
     syncOptions:
       - CreateNamespace=true
