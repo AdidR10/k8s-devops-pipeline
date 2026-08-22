@@ -46,9 +46,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: orders-api
+  labels:
+    app: orders-api      # so the ServiceMonitor's selector can find this Service
 spec:
   selector:
     app: orders-api
   ports:
-  - port: 8080
+  - name: http             # so the ServiceMonitor can reference the port by name
+    port: 8080
     targetPort: 8080

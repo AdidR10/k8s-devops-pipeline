@@ -1,0 +1,32 @@
+# k3s bundles the controller-manager, scheduler, proxy, and etcd into ONE process
+# and does not expose them the way this chart expects. Left enabled, they show up
+# as permanently-red targets AND fire fake "ComponentDown" alerts. Disable them.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+
+# Expose the three UIs on NodePorts (chosen to avoid earlier labs' ports).
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30090
+  prometheusSpec:
+    retention: 2h          # short retention — this is a lab, not production
+    # No storageSpec = emptyDir: metrics are lost if the Prometheus pod restarts.
+    # We skip PV/PVC deliberately (persistent storage is a separate topic).
+
+grafana:
+  adminPassword: admin123
+  service:
+    type: NodePort
+    nodePort: 30300
+
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 30903

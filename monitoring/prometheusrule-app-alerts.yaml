@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: shop-alerts
+  namespace: monitoring
+  labels:
+    release: kps          # same operator-selector rule as the ServiceMonitor
+spec:
+  groups:
+    - name: shop.rules
+      rules:
+        - alert: BackendDown
+          expr: kube_deployment_status_replicas_available{namespace="shop", deployment="orders-api"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "orders-api has zero available replicas"
+        - alert: HighErrorRate
+          expr: sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "5xx error rate is above 5%"
+        - alert: NodeHighCpu
+          expr: (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 0.8
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node CPU is above 80%"

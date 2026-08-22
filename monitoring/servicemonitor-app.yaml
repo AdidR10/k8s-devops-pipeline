@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: shop-apps
+  namespace: shop
+  labels:
+    release: kps          # REQUIRED — see the gotcha below
+spec:
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: [products-api, orders-api]   # only the instrumented backends
+  endpoints:
+    - port: http          # the NAMED service port that serves /metrics
+      path: /metrics
+      interval: 30s
